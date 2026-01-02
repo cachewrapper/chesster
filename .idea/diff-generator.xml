@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DiffGenerationConfig">
+    <option name="snapshotDb" value="false" />
+    <option name="snapshotModelValue" value="chesster.Spring.user-service.main:entityManagerFactory" />
+    <option name="sourceModelValue" value="chesster.Spring.user-service.main:entityManagerFactory" />
+    <option name="targetDbValue" value="a2f5cf7f-fc1d-4597-bbbe-fbef5040c760" />
+  </component>
+</project>
