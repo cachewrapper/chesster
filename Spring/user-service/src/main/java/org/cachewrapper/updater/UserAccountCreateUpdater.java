@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class UserAccountCreateUpdater implements Updater<AccountCreateEvent> {
 
     private final UserAggregateRepository userAggregateRepository;
-//    private final UserViewRepository userViewRepository;
+    private final UserViewRepository userViewRepository;
 
     @Override
     @KafkaListener(topics = "account-create", groupId = "account-events-group")
@@ -26,13 +26,10 @@ public class UserAccountCreateUpdater implements Updater<AccountCreateEvent> {
         var email = event.getEmail();
         var username = event.getUsername();
 
-        UserAggregate userAggregate = userAggregateRepository
-                .findById(userUUID)
-                .orElseGet(() -> new UserAggregate(userUUID, email, username));
-
+        UserAggregate userAggregate = new UserAggregate(userUUID, email, username);
         userAggregateRepository.save(userAggregate);
 
-//        var userViewDto = new UserViewDto(userUUID, email, username);
-//        userViewRepository.save(userViewDto);
+        var userViewDto = new UserViewDto(userUUID, email, username);
+        userViewRepository.save(userViewDto);
     }
 }

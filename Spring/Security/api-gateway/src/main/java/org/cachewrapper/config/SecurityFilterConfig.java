@@ -1,6 +1,7 @@
-package org.cachewrapper.filter.config;
+package org.cachewrapper.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.cachewrapper.filter.AuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ public class SecurityFilterConfig {
 
     private final AuthenticationFilter authenticationFilter;
 
+    @SneakyThrows
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
         return httpSecurity

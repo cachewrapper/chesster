@@ -41,13 +41,19 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        var cookies = Arrays.asList(httpServletRequest.getCookies());
-        if (cookies.isEmpty()) {
+        var cookies = httpServletRequest.getCookies();
+        if (cookies == null) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
 
-        var accessTokenCookieOptional = cookies.stream()
+        var cookieList = Arrays.asList(cookies);
+        if (cookieList.isEmpty()) {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
+        }
+
+        var accessTokenCookieOptional = cookieList.stream()
                 .filter(cookie -> cookie.getName().equals("access_token"))
                 .findFirst();
         if (accessTokenCookieOptional.isEmpty()) {

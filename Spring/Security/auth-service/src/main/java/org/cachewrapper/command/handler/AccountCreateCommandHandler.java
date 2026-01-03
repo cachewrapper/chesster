@@ -5,7 +5,10 @@ import org.cachewrapper.aggregate.UserCredentialsAggregate;
 import org.cachewrapper.aggregate.repository.UserCredentialsAggregateRepository;
 import org.cachewrapper.command.domain.AccountCreateCommand;
 import org.cachewrapper.event.Event;
+import org.cachewrapper.event.UserCredentialsCreateEvent;
 import org.cachewrapper.event.impl.AccountCreateEvent;
+import org.cachewrapper.query.domain.UserCredentialsView;
+import org.cachewrapper.query.repository.UserCredentialsViewRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,10 +35,13 @@ public class AccountCreateCommandHandler implements CommandHandler<AccountCreate
         var password = command.password();
         var passwordHash = Objects.requireNonNull(passwordEncoder.encode(password));
 
-        var userAggregate = new UserCredentialsAggregate(userUUID, passwordHash, email, username);
-        var savedUserCredentialsAggregate = credentialsAggregateRepository.save(userAggregate);
+        var userAggregate = new UserCredentialsAggregate(userUUID, email, username, passwordHash);
+        credentialsAggregateRepository.save(userAggregate);
 
-        var accountCreateEvent = new AccountCreateEvent(savedUserCredentialsAggregate.getAggregateUUID(), username, email);
+        var accountCreateEvent = new AccountCreateEvent(userUUID, email, username);
         kafkaTemplate.send("account-create", accountCreateEvent);
+
+        var userCredentialsCreateEvent = new UserCredentialsCreateEvent(userUUID, email, username, passwordHash);
+        kafkaTemplate.send("user-credentials-create", userCredentialsCreateEvent);
     }
 }

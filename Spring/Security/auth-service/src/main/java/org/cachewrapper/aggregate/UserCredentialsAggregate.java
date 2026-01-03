@@ -25,7 +25,7 @@ public class UserCredentialsAggregate extends Aggregate {
     @Column(name = "username")
     private String username;
 
-    @Column(name = "passwordHash")
+    @Column(name = "password_hash")
     private String passwordHash;
 
     public UserCredentialsAggregate(

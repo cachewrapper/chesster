@@ -8,4 +8,5 @@ version = "1.0"
 
 dependencies {
     implementation(project(":Spring:Security:common-security"))
+    implementation(project(":Spring:common"))
 }
