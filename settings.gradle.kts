@@ -1,5 +1,7 @@
 rootProject.name = "chesster"
 
+include(":React:chesster-frontend")
+
 include(":Spring:common")
 
 include("Spring:Security:common-security")

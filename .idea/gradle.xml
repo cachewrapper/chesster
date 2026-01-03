@@ -9,6 +9,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/React" />
+            <option value="$PROJECT_DIR$/React/chesster-frontend" />
             <option value="$PROJECT_DIR$/Spring" />
             <option value="$PROJECT_DIR$/Spring/Security" />
             <option value="$PROJECT_DIR$/Spring/Security/api-gateway" />
