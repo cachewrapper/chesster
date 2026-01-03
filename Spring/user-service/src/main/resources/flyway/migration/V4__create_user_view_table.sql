@@ -4,6 +4,6 @@ CREATE TABLE user_view (
     username VARCHAR(255) NOT NULL UNIQUE,
     CONSTRAINT fk_user_aggregate
         FOREIGN KEY (user_uuid)
-          REFERENCES user_aggregate(user_uuid)
+          REFERENCES user_aggregate(aggregate_uuid)
           ON DELETE CASCADE
 );

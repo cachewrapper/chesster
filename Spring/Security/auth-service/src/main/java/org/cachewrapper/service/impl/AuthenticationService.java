@@ -1,32 +1,36 @@
-package org.cachewrapper.service;
+package org.cachewrapper.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.cachewrapper.command.coordinator.AccountCreateCommandCoordinator;
+import org.cachewrapper.command.coordinator.UpdateRefreshTokenCommandCoordinator;
 import org.cachewrapper.command.domain.AccountCreateCommand;
+import org.cachewrapper.command.domain.UpdateRefreshTokenCommand;
 import org.cachewrapper.exception.EmailAlreadyExistsException;
 import org.cachewrapper.exception.UsernameAlreadyExistsException;
 import org.cachewrapper.query.service.UserCredentialsQueryService;
+import org.cachewrapper.service.AuthService;
 import org.cachewrapper.token.domain.payload.AccessTokenPayload;
-import org.cachewrapper.token.service.impl.AccessTokenService;
+import org.cachewrapper.token.domain.payload.RefreshTokenPayload;
+import org.cachewrapper.token.service.AccessTokenService;
+import org.cachewrapper.token.service.RefreshTokenService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AuthenticationService {
+public class AuthenticationService implements AuthService {
 
     private final AccountCreateCommandCoordinator accountCreateCommandCoordinator;
+    private final UpdateRefreshTokenCommandCoordinator updateRefreshTokenCommandCoordinator;
     private final UserCredentialsQueryService userCredentialsQueryService;
 
     private final AccessTokenService accessTokenService;
+    private final RefreshTokenService refreshTokenService;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @NotNull
@@ -37,18 +41,16 @@ public class AuthenticationService {
     ) {
         try {
             var userUUID = UUID.randomUUID();
-            var accountCreateCommand = new AccountCreateCommand(userUUID, email, username, password);
+            var accessTokenPayload = new AccessTokenPayload(userUUID, username);
+            var refreshTokenPayload = new RefreshTokenPayload(userUUID, username);
+
+            var accessTokenString = accessTokenService.generateTokenString(accessTokenPayload);
+            var refreshTokenString = refreshTokenService.generateTokenString(refreshTokenPayload);
+
+            var accountCreateCommand = new AccountCreateCommand(userUUID, email, username, password, refreshTokenString);
             accountCreateCommandCoordinator.coordinate(accountCreateCommand);
 
-            var accessTokenPayload = new AccessTokenPayload(userUUID, username);
-            var accessTokenString = accessTokenService.generateTokenString(accessTokenPayload);
-
-            var expirationDuration = accessTokenService.getExpirationDuration();
-            var accessTokenCookie = generateCookie("access_token", accessTokenString, expirationDuration);
-
-            return ResponseEntity.ok()
-                    .header("Set-Cookie", accessTokenCookie.toString())
-                    .build();
+            return generateTokensResponse(accessTokenService, refreshTokenService, accessTokenString, refreshTokenString);
         } catch (UsernameAlreadyExistsException | EmailAlreadyExistsException exception) {
             return ResponseEntity.badRequest().body("Error");
         }
@@ -70,29 +72,16 @@ public class AuthenticationService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
         }
 
-        var accessTokenPayload = new AccessTokenPayload(userCredentialsView.getUserUUID(), userCredentialsView.getUsername());
+        var userUUID = userCredentialsView.getUserUUID();
+        var accessTokenPayload = new AccessTokenPayload(userUUID, userCredentialsView.getUsername());
         var accessTokenString = accessTokenService.generateTokenString(accessTokenPayload);
 
-        var expirationDuration = accessTokenService.getExpirationDuration();
-        var accessTokenCookie = generateCookie("access_token", accessTokenString, expirationDuration);
+        var refreshTokenPayload = new RefreshTokenPayload(userCredentialsView.getUserUUID(), userCredentialsView.getUsername());
+        var refreshTokenString = refreshTokenService.generateTokenString(refreshTokenPayload);
 
-        return ResponseEntity.ok()
-                .header("Set-Cookie", accessTokenCookie.toString())
-                .build();
-    }
+        var updateRefreshTokenCommand = new UpdateRefreshTokenCommand(userUUID, refreshTokenString);
+        updateRefreshTokenCommandCoordinator.coordinate(updateRefreshTokenCommand);
 
-    @NotNull
-    private ResponseCookie generateCookie(
-            @NotNull String identifier,
-            @NotNull String value,
-            @NotNull Duration expirationDuration
-    ) {
-        return ResponseCookie.from(identifier, value)
-                .httpOnly(false)
-                .secure(false)
-                .path("/")
-                .maxAge(expirationDuration)
-                .sameSite("Lax")
-                .build();
+        return generateTokensResponse(accessTokenService, refreshTokenService, accessTokenString, refreshTokenString);
     }
 }

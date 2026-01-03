@@ -3,7 +3,9 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/Spring/Security/auth-service/build/resources/main/flyway/migration/V1__create_user_credentials_aggregate_table.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/Spring/Security/auth-service/src/main/resources/flyway/migration/V1__create_user_credentials_aggregate_table.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/Spring/user-service/src/main/resources/flyway/migration/V2__create_user_aggregate_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/Spring/Security/auth-service/src/main/resources/flyway/migration/V2__create_user_credentials_view_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/Spring/user-service/src/main/resources/flyway/migration/V3__create_user_aggregate_table.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/Spring/user-service/src/main/resources/flyway/migration/V4__create_user_view_table.sql" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/docker/postgres/01-initializing-postgres.sql" dialect="GenericSQL" />
   </component>
 </project>

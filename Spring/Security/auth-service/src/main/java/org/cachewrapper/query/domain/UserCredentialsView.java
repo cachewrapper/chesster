@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.UUID;
 
 @Entity
@@ -29,4 +30,7 @@ public class UserCredentialsView implements View {
 
     @Column(name = "password_hash")
     private String passwordHash;
+
+    @Column(name = "refresh_token")
+    private String refreshTokenString;
 }

@@ -1,6 +1,7 @@
 package org.cachewrapper.token.service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.cachewrapper.token.domain.payload.TokenPayload;
 import org.cachewrapper.token.domain.token.Token;
@@ -15,15 +16,23 @@ public interface TokenService<T extends Token, P extends TokenPayload> {
     SecretKey SECRET_KEY = Keys.hmacShaKeyFor("CHESSTER_CHESSTER_CHESSTER_CHESSTER_CHESSTER".getBytes());
 
     @NotNull
+    default <C> C getClaim(@NotNull String tokenString, @NotNull Function<Claims, C> resolver) {
+        var claims = Jwts.parser()
+                .verifyWith(SECRET_KEY)
+                .build()
+                .parseSignedClaims(tokenString)
+                .getPayload();
+
+        return resolver.apply(claims);
+    }
+
+    @NotNull
     String generateTokenString(@NotNull P tokenPayload);
 
     boolean validateTokenString(@NotNull String tokenString);
 
     @NotNull
     T getTokenFromString(@NotNull String tokenString);
-
-    @NotNull
-    <C> C getClaim(@NotNull String tokenString, @NotNull Function<Claims, C> resolver);
 
     @NotNull
     Duration getExpirationDuration();

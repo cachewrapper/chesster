@@ -5,12 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
-@RequiredArgsConstructor
 @Data
-public class UserCredentialsCreateEvent implements Event {
+@RequiredArgsConstructor
+public class UpdateRefreshTokenEvent implements Event {
     private final UUID userUUID;
-    private final String email;
-    private final String username;
-    private final String passwordHash;
     private final String refreshTokenString;
 }

@@ -5,8 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import java.util.UUID;
-
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "org.cachewrapper")
 @ConfigurationPropertiesScan(basePackages = "org.cachewrapper")

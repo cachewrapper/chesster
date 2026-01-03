@@ -2,10 +2,7 @@ package org.cachewrapper.command.domain;
 
 import java.util.UUID;
 
-public record AccountCreateCommand(
+public record UpdateRefreshTokenCommand(
         UUID userUUID,
-        String email,
-        String username,
-        String password,
         String refreshTokenString
 ) implements Command {}

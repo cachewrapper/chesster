@@ -3,7 +3,6 @@ package org.cachewrapper.updater;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.cachewrapper.event.UserCredentialsCreateEvent;
-import org.cachewrapper.event.impl.AccountCreateEvent;
 import org.cachewrapper.query.domain.UserCredentialsView;
 import org.cachewrapper.query.repository.UserCredentialsViewRepository;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -23,8 +22,9 @@ public class UserCredentialsViewCreateUpdater implements Updater<UserCredentials
         var email = event.getEmail();
         var username = event.getUsername();
         var passwordHash = event.getPasswordHash();
+        var refreshTokenString = event.getRefreshTokenString();
 
-        var userCredentialsView = new  UserCredentialsView(userUUID, email, username, passwordHash);
+        var userCredentialsView = new UserCredentialsView(userUUID, email, username, passwordHash, refreshTokenString);
         userCredentialsViewRepository.save(userCredentialsView);
     }
 }

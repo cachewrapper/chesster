@@ -2,11 +2,10 @@ package org.cachewrapper.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.cachewrapper.token.service.impl.AccessTokenService;
+import org.cachewrapper.token.service.AccessTokenService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +21,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
     private static final List<String> PUBLIC_PATH_LIST = List.of(
             "/api/v1/auth/register",
-            "/api/v1/auth/login"
+            "/api/v1/auth/login",
+            "/api/v1/auth/token/refresh"
     );
 
     protected final AccessTokenService accessTokenService;

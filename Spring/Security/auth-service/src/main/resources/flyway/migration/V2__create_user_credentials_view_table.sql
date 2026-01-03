@@ -4,5 +4,6 @@ CREATE TABLE user_credentials_view (
         ON DELETE CASCADE,
     email VARCHAR(255) NOT NULL UNIQUE,
     username VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL
+    password_hash VARCHAR(255) NOT NULL,
+    refresh_token VARCHAR(512) NOT NULL
 );
