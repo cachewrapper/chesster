@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 @RequiredArgsConstructor
-public class UpdateRefreshTokenEvent implements Event {
+public class RemoveRefreshTokenEvent implements Event {
     private final UUID userUUID;
     private final String refreshTokenString;
 }

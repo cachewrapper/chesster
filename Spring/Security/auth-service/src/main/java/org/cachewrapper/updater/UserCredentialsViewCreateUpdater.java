@@ -8,6 +8,11 @@ import org.cachewrapper.query.repository.UserCredentialsViewRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Component
 @RequiredArgsConstructor
 public class UserCredentialsViewCreateUpdater implements Updater<UserCredentialsCreateEvent> {
@@ -16,7 +21,6 @@ public class UserCredentialsViewCreateUpdater implements Updater<UserCredentials
 
     @Override
     @KafkaListener(topics = "user-credentials-create", groupId = "account-events-group")
-    @Transactional
     public void update(UserCredentialsCreateEvent event) {
         var userUUID = event.getUserUUID();
         var email = event.getEmail();
@@ -24,7 +28,8 @@ public class UserCredentialsViewCreateUpdater implements Updater<UserCredentials
         var passwordHash = event.getPasswordHash();
         var refreshTokenString = event.getRefreshTokenString();
 
-        var userCredentialsView = new UserCredentialsView(userUUID, email, username, passwordHash, refreshTokenString);
+        var refreshTokenList = new ArrayList<>(List.of(refreshTokenString));
+        var userCredentialsView = new UserCredentialsView(userUUID, email, username, passwordHash, refreshTokenList);
         userCredentialsViewRepository.save(userCredentialsView);
     }
 }

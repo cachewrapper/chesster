@@ -11,8 +11,26 @@ volumes:
     driver: local
   kafka_data:
     driver: local
+  redis:
+    driver: local
 
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command: [ "redis-server", "--appendonly", "yes" ]
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis:/data
+    networks:
+      - user
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
   postgres:
     image: postgres:15.1-alpine
     container_name: postgres

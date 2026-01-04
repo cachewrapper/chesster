@@ -1,10 +1,7 @@
 package org.cachewrapper.service;
 
-import lombok.RequiredArgsConstructor;
-import org.cachewrapper.token.domain.payload.AccessTokenPayload;
-import org.cachewrapper.token.domain.payload.RefreshTokenPayload;
-import org.cachewrapper.token.service.AccessTokenService;
-import org.cachewrapper.token.service.RefreshTokenService;
+import org.cachewrapper.token.service.token.AccessTokenService;
+import org.cachewrapper.token.service.token.RefreshTokenService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +24,8 @@ public interface AuthService {
         var refreshTokenCookie = generateCookie("refresh_token", refreshTokenString, refreshTokenExpiration);
 
         return ResponseEntity.ok()
-                .header("Set-Cookie", accessTokenCookie.toString(), refreshTokenCookie.toString())
+                .header("Set-Cookie", accessTokenCookie.toString())
+                .header("Set-Cookie", refreshTokenCookie.toString())
                 .build();
     }
 
@@ -38,7 +36,7 @@ public interface AuthService {
             @NotNull Duration expirationDuration
     ) {
         return ResponseCookie.from(identifier, value)
-                .httpOnly(true)
+                .httpOnly(false)
                 .secure(false)
                 .path("/")
                 .maxAge(expirationDuration)

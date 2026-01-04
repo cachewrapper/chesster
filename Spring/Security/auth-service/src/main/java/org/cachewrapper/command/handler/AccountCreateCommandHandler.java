@@ -12,6 +12,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -33,7 +35,8 @@ public class AccountCreateCommandHandler implements CommandHandler<AccountCreate
         var password = command.password();
         var passwordHash = Objects.requireNonNull(passwordEncoder.encode(password));
 
-        var userAggregate = new UserCredentialsAggregate(userUUID, email, username, passwordHash, refreshTokenString);
+        var refreshTokenList = new ArrayList<>(List.of(refreshTokenString));
+        var userAggregate = new UserCredentialsAggregate(userUUID, email, username, passwordHash, refreshTokenList);
         credentialsAggregateRepository.save(userAggregate);
 
         var accountCreateEvent = new AccountCreateEvent(userUUID, email, username);

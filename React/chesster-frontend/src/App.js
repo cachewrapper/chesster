@@ -1,26 +1,21 @@
-import logo from './logo.svg';
+import { useContext } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import MainGuest from "./pages/main/MainGuest";
+import MainUser from "./pages/main/MainUser";
+import { Login } from "./pages/Login";
+import Register from "./pages/Register";
+import { AuthContext } from "./context/AuthContext";
 
-function App() {
+export default function App() {
+    const { isLoggedIn, loading } = useContext(AuthContext);
+    if (loading) return <div>Загрузка...</div>;
+
+    console.log("isLoggedIn:", isLoggedIn);
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-            <img
-                src={logo}
-                alt="logo"
-                className="h-40 animate-spin-slow pointer-events-none mb-8"
-            />
-            <p className="text-lg">
-                Edit <code className="bg-gray-800 px-1 rounded">src/App.js</code> and save to reload.
-            </p>
-            <a
-                href="https://reactjs.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 text-blue-400 hover:text-blue-600 transition-colors"
-            >
-                Learn React
-            </a>
-        </div>
+        <Routes>
+            <Route path="/" element={isLoggedIn ? <MainUser /> : <MainGuest />} />
+            <Route path="/login" element={isLoggedIn ? <Navigate to="/" /> : <Login />} />
+            <Route path="/register" element={isLoggedIn ? <Navigate to="/" /> : <Register />} />
+        </Routes>
     );
 }
-
-export default App;

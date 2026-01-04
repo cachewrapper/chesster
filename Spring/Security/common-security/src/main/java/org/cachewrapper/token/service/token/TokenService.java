@@ -1,4 +1,4 @@
-package org.cachewrapper.token.service;
+package org.cachewrapper.token.service.token;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

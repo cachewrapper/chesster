@@ -1,11 +1,10 @@
-module.exports = {
-    content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+export default {
+    content: [
+        "./index.html",
+        "./src/**/*.{js,ts,jsx,tsx}",
+    ],
     theme: {
-        extend: {
-            animation: {
-                'spin-slow': 'spin 20s linear infinite',
-            },
-        },
+        extend: {},
     },
     plugins: [],
-}
+};

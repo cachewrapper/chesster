@@ -1,4 +1,4 @@
-package org.cachewrapper.token.service;
+package org.cachewrapper.token.service.token;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.cachewrapper.token.domain.payload.AccessTokenPayload;
 import org.cachewrapper.token.domain.token.AccessToken;
+import org.cachewrapper.token.service.invalid.InvalidAccessTokenService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,8 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class AccessTokenService implements TokenService<AccessToken, AccessTokenPayload> {
+
+    private final InvalidAccessTokenService invalidAccessTokenService;
 
     @Override
     public @NotNull String generateTokenString(@NotNull AccessTokenPayload tokenPayload) {
@@ -36,6 +39,10 @@ public class AccessTokenService implements TokenService<AccessToken, AccessToken
 
     @Override
     public boolean validateTokenString(@NotNull String tokenString) {
+        if (!invalidAccessTokenService.validateAccessToken(tokenString)) {
+            return false;
+        }
+
         try {
             Jwts.parser()
                     .verifyWith(SECRET_KEY)

@@ -2,30 +2,32 @@ package org.cachewrapper.command.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.cachewrapper.aggregate.repository.UserCredentialsAggregateRepository;
-import org.cachewrapper.command.domain.UpdateRefreshTokenCommand;
+import org.cachewrapper.command.domain.AddRefreshTokenCommand;
 import org.cachewrapper.event.Event;
-import org.cachewrapper.event.UpdateRefreshTokenEvent;
+import org.cachewrapper.event.AddRefreshTokenEvent;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class UpdateRefreshTokenCommandHandler implements CommandHandler<UpdateRefreshTokenCommand> {
+public class AddRefreshTokenCommandHandler implements CommandHandler<AddRefreshTokenCommand> {
 
     private final UserCredentialsAggregateRepository credentialsAggregateRepository;
     private final KafkaTemplate<String, Event> kafkaTemplate;
 
     @Override
-    public void handleCommand(@NotNull UpdateRefreshTokenCommand command) {
+    @Transactional
+    public void handleCommand(@NotNull AddRefreshTokenCommand command) {
         var userUUID = command.userUUID();
         var refreshTokenString = command.refreshTokenString();
 
         var userAggregate = credentialsAggregateRepository.findById(userUUID).orElseThrow();
-        userAggregate.setRefreshTokenString(refreshTokenString);
+        userAggregate.addRefreshToken(refreshTokenString);
         credentialsAggregateRepository.save(userAggregate);
 
-        var updateRefreshTokenEvent = new UpdateRefreshTokenEvent(userUUID, refreshTokenString);
-        kafkaTemplate.send("update-refresh-token", updateRefreshTokenEvent);
+        var updateRefreshTokenEvent = new AddRefreshTokenEvent(userUUID, refreshTokenString);
+        kafkaTemplate.send("add-refresh-token", updateRefreshTokenEvent);
     }
 }

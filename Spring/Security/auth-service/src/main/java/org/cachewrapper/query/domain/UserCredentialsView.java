@@ -1,14 +1,12 @@
 package org.cachewrapper.query.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.print.attribute.standard.MediaSize;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -32,5 +30,10 @@ public class UserCredentialsView implements View {
     private String passwordHash;
 
     @Column(name = "refresh_token")
-    private String refreshTokenString;
+    @CollectionTable(
+            name = "user_credentials_view_refresh_tokens",
+            joinColumns = @JoinColumn(name = "user_uuid")
+    )
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> refreshTokens = new ArrayList<>();
 }
