@@ -12,16 +12,19 @@ import org.cachewrapper.token.domain.payload.RefreshTokenPayload;
 import org.cachewrapper.token.service.token.AccessTokenService;
 import org.cachewrapper.token.service.token.RefreshTokenService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class TokenService implements AuthService {
 
-    private final AddRefreshTokenCommandCoordinator updateRefreshTokenCommandCoordinator;
+    private final AddRefreshTokenCommandCoordinator addRefreshTokenCommandCoordinator;
     private final RemoveRefreshTokenCommandCoordinator removeRefreshTokenCommandCoordinator;
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
@@ -38,20 +41,24 @@ public class TokenService implements AuthService {
             var refreshTokenPayload = new RefreshTokenPayload(userUUID, accessTokenString);
             var refreshTokenString = refreshTokenService.generateTokenString(refreshTokenPayload);
 
-            var removeRefreshTokenCommand = new RemoveRefreshTokenCommand(userUUID, refreshTokenCookieString);
+            var removeRefreshTokenCommand = new RemoveRefreshTokenCommand(userUUID, refreshTokenString);
             removeRefreshTokenCommandCoordinator.coordinate(removeRefreshTokenCommand);
 
-            var updateRefreshTokenCommand = new AddRefreshTokenCommand(userUUID, refreshTokenString);
-            updateRefreshTokenCommandCoordinator.coordinate(updateRefreshTokenCommand);
+            var addRefreshTokenCommand = new AddRefreshTokenCommand(userUUID, refreshTokenString);
+            addRefreshTokenCommandCoordinator.coordinate(addRefreshTokenCommand);
 
             return generateTokensResponse(accessTokenService, refreshTokenService, accessTokenString, refreshTokenString);
         } catch (RefreshTokenInvalidException exception) {
-            var accessTokenCookie = ResponseCookie.from("access_token", "").build();
-            var refreshTokenCookie = ResponseCookie.from("refresh_token", "").build();
+            var accessTokenCookie = generateCookie("access_token", "", Duration.ZERO);
+            var refreshTokenCookie = generateCookie("refresh_token_uuid", "", Duration.ZERO);
+
+            var httpHeaders = new HttpHeaders();
+            httpHeaders.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+            httpHeaders.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .header("Set-Cookie", accessTokenCookie.toString(), refreshTokenCookie.toString())
+                    .headers(httpHeaders)
                     .build();
         }
     }

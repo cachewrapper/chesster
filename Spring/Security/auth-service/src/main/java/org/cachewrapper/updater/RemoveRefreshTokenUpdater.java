@@ -15,17 +15,11 @@ public class RemoveRefreshTokenUpdater implements Updater<RemoveRefreshTokenEven
 
     @Override
     @KafkaListener(topics = "remove-refresh-token", groupId = "account-events-group")
+    @Transactional
     public void update(RemoveRefreshTokenEvent event) {
-        System.out.println("Received remove-refresh-token event");
-
         var userUUID = event.getUserUUID();
         var refreshTokenString = event.getRefreshTokenString();
-        var userCredentialsView = userCredentialsViewRepository.findById(userUUID).orElseThrow();
 
-        var refreshTokenSet = userCredentialsView.getRefreshTokens();
-        refreshTokenSet.remove(refreshTokenString);
-
-        userCredentialsView.setRefreshTokens(refreshTokenSet);
-        userCredentialsViewRepository.save(userCredentialsView);
+        userCredentialsViewRepository.deleteRefreshToken(userUUID, refreshTokenString);
     }
 }

@@ -8,9 +8,10 @@ import { AuthContext } from "./context/AuthContext";
 
 export default function App() {
     const { isLoggedIn, loading } = useContext(AuthContext);
-    if (loading) return <div>Загрузка...</div>;
+    if (loading) {
+        return <div>Загрузка...</div>;
+    }
 
-    console.log("isLoggedIn:", isLoggedIn);
     return (
         <Routes>
             <Route path="/" element={isLoggedIn ? <MainUser /> : <MainGuest />} />

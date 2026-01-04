@@ -13,8 +13,8 @@ public class TokenV1Controller {
     private final TokenService tokenService;
 
     @PostMapping("/token/refresh")
-    public ResponseEntity<String> refreshToken(@CookieValue(value = "refresh_token") String refreshTokenString) {
-        return tokenService.refreshToken(refreshTokenString);
+    public ResponseEntity<String> refreshToken(@CookieValue(value = "refresh_token_uuid") String refreshTokenUUIDString) {
+        return tokenService.refreshToken(refreshTokenUUIDString);
     }
 
     @GetMapping("/token/validate")

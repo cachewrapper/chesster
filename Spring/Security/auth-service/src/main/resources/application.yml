@@ -1,6 +1,4 @@
 spring:
-  main:
-    allow-bean-definition-overriding: true
   flyway:
     validate-on-migrate: false
     url: jdbc:postgresql://localhost:5432/chesster

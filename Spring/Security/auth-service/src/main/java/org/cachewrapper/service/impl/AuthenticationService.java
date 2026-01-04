@@ -18,11 +18,10 @@ import org.cachewrapper.token.service.token.AccessTokenService;
 import org.cachewrapper.token.service.token.RefreshTokenService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -118,6 +117,10 @@ public class AuthenticationService implements AuthService {
 
         var accessTokenCookie = generateCookie("access_token", "", Duration.ZERO);
         var refreshTokenCookie = generateCookie("refresh_token", "", Duration.ZERO);
+
+        var httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        httpHeaders.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
 
         invalidAccessTokenService.invalidateToken(accessTokenString, accessTokenService);
         return ResponseEntity.ok()

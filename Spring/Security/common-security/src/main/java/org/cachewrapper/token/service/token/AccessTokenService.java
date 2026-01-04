@@ -76,6 +76,6 @@ public class AccessTokenService implements TokenService<AccessToken, AccessToken
 
     @Override
     public @NotNull Duration getExpirationDuration() {
-        return Duration.ofMinutes(10);
+        return Duration.ofSeconds(3);
     }
 }

@@ -1,7 +1,6 @@
 package org.cachewrapper.command.handler;
 
 import lombok.RequiredArgsConstructor;
-import org.cachewrapper.aggregate.repository.UserCredentialsAggregateRepository;
 import org.cachewrapper.command.domain.AddRefreshTokenCommand;
 import org.cachewrapper.event.Event;
 import org.cachewrapper.event.AddRefreshTokenEvent;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AddRefreshTokenCommandHandler implements CommandHandler<AddRefreshTokenCommand> {
 
-    private final UserCredentialsAggregateRepository credentialsAggregateRepository;
     private final KafkaTemplate<String, Event> kafkaTemplate;
 
     @Override
@@ -22,10 +20,6 @@ public class AddRefreshTokenCommandHandler implements CommandHandler<AddRefreshT
     public void handleCommand(@NotNull AddRefreshTokenCommand command) {
         var userUUID = command.userUUID();
         var refreshTokenString = command.refreshTokenString();
-
-        var userAggregate = credentialsAggregateRepository.findById(userUUID).orElseThrow();
-        userAggregate.addRefreshToken(refreshTokenString);
-        credentialsAggregateRepository.save(userAggregate);
 
         var updateRefreshTokenEvent = new AddRefreshTokenEvent(userUUID, refreshTokenString);
         kafkaTemplate.send("add-refresh-token", updateRefreshTokenEvent);

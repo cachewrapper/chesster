@@ -2,7 +2,6 @@ package org.cachewrapper.updater;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.cachewrapper.aggregate.repository.UserCredentialsAggregateRepository;
 import org.cachewrapper.event.AddRefreshTokenEvent;
 import org.cachewrapper.query.repository.UserCredentialsViewRepository;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,17 +15,11 @@ public class AddRefreshTokenUpdater implements Updater<AddRefreshTokenEvent> {
 
     @Override
     @KafkaListener(topics = "add-refresh-token", groupId = "account-events-group")
+    @Transactional
     public void update(AddRefreshTokenEvent event) {
-        System.out.println("Received add-refresh-token event");
-
         var userUUID = event.getUserUUID();
         var refreshTokenString = event.getRefreshTokenString();
-        var userCredentialsView = userCredentialsViewRepository.findById(userUUID).orElseThrow();
 
-        var refreshTokenSet = userCredentialsView.getRefreshTokens();
-        refreshTokenSet.add(refreshTokenString);
-
-        userCredentialsView.setRefreshTokens(refreshTokenSet);
-        userCredentialsViewRepository.save(userCredentialsView);
+        userCredentialsViewRepository.insertRefreshToken(userUUID, refreshTokenString);
     }
 }

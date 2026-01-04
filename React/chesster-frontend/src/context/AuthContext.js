@@ -10,7 +10,6 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         (async () => {
             const logged = await checkAuth();
-            console.log(logged);
             setIsLoggedIn(logged);
             setLoading(false);
         })();

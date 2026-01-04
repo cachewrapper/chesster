@@ -35,8 +35,7 @@ public class AccountCreateCommandHandler implements CommandHandler<AccountCreate
         var password = command.password();
         var passwordHash = Objects.requireNonNull(passwordEncoder.encode(password));
 
-        var refreshTokenList = new ArrayList<>(List.of(refreshTokenString));
-        var userAggregate = new UserCredentialsAggregate(userUUID, email, username, passwordHash, refreshTokenList);
+        var userAggregate = new UserCredentialsAggregate(userUUID, email, username, passwordHash);
         credentialsAggregateRepository.save(userAggregate);
 
         var accountCreateEvent = new AccountCreateEvent(userUUID, email, username);

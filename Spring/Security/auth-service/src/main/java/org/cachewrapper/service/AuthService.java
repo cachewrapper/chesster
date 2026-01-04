@@ -3,6 +3,7 @@ package org.cachewrapper.service;
 import org.cachewrapper.token.service.token.AccessTokenService;
 import org.cachewrapper.token.service.token.RefreshTokenService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 
@@ -23,9 +24,12 @@ public interface AuthService {
         var refreshTokenExpiration = refreshTokenService.getExpirationDuration();
         var refreshTokenCookie = generateCookie("refresh_token", refreshTokenString, refreshTokenExpiration);
 
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
+        httpHeaders.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+
         return ResponseEntity.ok()
-                .header("Set-Cookie", accessTokenCookie.toString())
-                .header("Set-Cookie", refreshTokenCookie.toString())
+                .headers(httpHeaders)
                 .build();
     }
 

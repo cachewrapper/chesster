@@ -1,6 +1,5 @@
 package org.cachewrapper.updater;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.cachewrapper.event.UserCredentialsCreateEvent;
 import org.cachewrapper.query.domain.UserCredentialsView;
@@ -9,9 +8,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor

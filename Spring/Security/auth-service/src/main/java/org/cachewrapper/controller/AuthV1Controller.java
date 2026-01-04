@@ -40,8 +40,8 @@ public class AuthV1Controller {
     @PostMapping("/logout")
     public ResponseEntity<String> logout(
             @CookieValue(value = "access_token") String accessTokenString,
-            @CookieValue(value = "refresh_token") String refreshTokenString
+            @CookieValue(value = "refresh_token_uuid") String refreshTokenUUIDString
     ) {
-        return authenticationService.logout(accessTokenString, refreshTokenString);
+        return authenticationService.logout(accessTokenString, refreshTokenUUIDString);
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RemoveRefreshTokenCommandHandler implements CommandHandler<RemoveRefreshTokenCommand> {
 
-    private final UserCredentialsAggregateRepository credentialsAggregateRepository;
     private final KafkaTemplate<String, Event> kafkaTemplate;
 
     @Override
@@ -22,10 +21,6 @@ public class RemoveRefreshTokenCommandHandler implements CommandHandler<RemoveRe
     public void handleCommand(@NotNull RemoveRefreshTokenCommand command) {
         var userUUID = command.userUUID();
         var refreshTokenString = command.refreshTokenString();
-
-        var userAggregate = credentialsAggregateRepository.findById(userUUID).orElseThrow();
-        userAggregate.removeRefreshToken(refreshTokenString);
-        credentialsAggregateRepository.save(userAggregate);
 
         var removeRefreshTokenEvent = new RemoveRefreshTokenEvent(userUUID, refreshTokenString);
         kafkaTemplate.send("remove-refresh-token", removeRefreshTokenEvent);

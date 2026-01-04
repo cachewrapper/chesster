@@ -11,6 +11,7 @@ CREATE TABLE user_credentials_view_refresh_tokens (
     user_uuid UUID NOT NULL
         REFERENCES user_credentials_view(user_uuid)
         ON DELETE CASCADE,
-    refresh_token VARCHAR(512) NOT NULL,
-    PRIMARY KEY(user_uuid, refresh_token)
+    refresh_token TEXT NOT NULL,
+    refresh_token_hash CHAR(32) GENERATED ALWAYS AS (md5(refresh_token)) STORED,
+    PRIMARY KEY (user_uuid, refresh_token_hash)
 );

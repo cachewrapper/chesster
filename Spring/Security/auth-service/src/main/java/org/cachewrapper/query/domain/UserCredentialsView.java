@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,5 +34,5 @@ public class UserCredentialsView implements View {
             joinColumns = @JoinColumn(name = "user_uuid")
     )
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> refreshTokens = new ArrayList<>();
+    private List<String> refreshTokens;
 }
