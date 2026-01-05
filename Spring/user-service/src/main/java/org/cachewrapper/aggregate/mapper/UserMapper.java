@@ -8,16 +8,16 @@ import org.springframework.stereotype.Component;
 public class UserMapper implements AggregateMapper<UserViewDto, UserAggregate> {
 
     @Override
-    public UserAggregate mapAggregate(UserViewDto view) {
-        var userUUID = view.getUserUUID();
-        var email = view.getEmail();
-        var username = view.getUsername();
+    public UserAggregate toAggregate(UserViewDto entity) {
+        var userUUID = entity.getUserUUID();
+        var email = entity.getEmail();
+        var username = entity.getUsername();
 
         return new UserAggregate(userUUID, email, username);
     }
 
     @Override
-    public UserViewDto mapView(UserAggregate aggregate) {
+    public UserViewDto toEntity(UserAggregate aggregate) {
         var aggregateUUID = aggregate.getAggregateUUID();
         var email = aggregate.getEmail();
         var username = aggregate.getUsername();

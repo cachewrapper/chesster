@@ -10,8 +10,6 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-@Table(name = "user_aggregate")
-@NoArgsConstructor
 public class UserAggregate extends Aggregate {
 
     @Column(name = "email")

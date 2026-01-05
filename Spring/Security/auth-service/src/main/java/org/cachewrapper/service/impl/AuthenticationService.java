@@ -1,131 +1,92 @@
 package org.cachewrapper.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.cachewrapper.command.coordinator.AccountCreateCommandCoordinator;
-import org.cachewrapper.command.coordinator.AddRefreshTokenCommandCoordinator;
-import org.cachewrapper.command.coordinator.RemoveRefreshTokenCommandCoordinator;
-import org.cachewrapper.command.domain.AccountCreateCommand;
-import org.cachewrapper.command.domain.AddRefreshTokenCommand;
-import org.cachewrapper.command.domain.RemoveRefreshTokenCommand;
-import org.cachewrapper.exception.EmailAlreadyExistsException;
-import org.cachewrapper.exception.UsernameAlreadyExistsException;
-import org.cachewrapper.query.service.UserCredentialsQueryService;
+import org.cachewrapper.command.domain.LoginUserCommand;
+import org.cachewrapper.command.domain.LogoutUserCommand;
+import org.cachewrapper.command.domain.RegisterUserCommand;
+import org.cachewrapper.command.response.JsonWebTokenResponse;
+import org.cachewrapper.command.service.LoginUserCommandService;
+import org.cachewrapper.command.service.LogoutUserCommandService;
+import org.cachewrapper.command.service.RegisterUserCommandService;
+import org.cachewrapper.exception.*;
 import org.cachewrapper.service.AuthService;
-import org.cachewrapper.token.domain.payload.AccessTokenPayload;
-import org.cachewrapper.token.domain.payload.RefreshTokenPayload;
-import org.cachewrapper.token.service.invalid.InvalidAccessTokenService;
+import org.cachewrapper.token.filter.domain.SessionAuthentication;
 import org.cachewrapper.token.service.token.AccessTokenService;
 import org.cachewrapper.token.service.token.RefreshTokenService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService implements AuthService {
 
-    private final AccountCreateCommandCoordinator accountCreateCommandCoordinator;
-    private final AddRefreshTokenCommandCoordinator updateRefreshTokenCommandCoordinator;
-    private final RemoveRefreshTokenCommandCoordinator removeRefreshTokenCommandCoordinator;
-    private final UserCredentialsQueryService userCredentialsQueryService;
-    private final InvalidAccessTokenService invalidAccessTokenService;
+    private final RegisterUserCommandService registerUserCommandService;
+    private final LoginUserCommandService loginUserCommandService;
+    private final LogoutUserCommandService logoutUserCommandService;
 
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
-    private final BCryptPasswordEncoder passwordEncoder;
 
     @NotNull
-    public ResponseEntity<String> register(
-            @NotNull String email,
-            @NotNull String username,
-            @NotNull String password,
-            @Nullable String accessTokenCookieString
-    ) {
-        if (accessTokenCookieString != null && accessTokenService.validateTokenString(accessTokenCookieString)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-
+    public ResponseEntity<String> register(@NotNull String email, @NotNull String username, @NotNull String password) {
         try {
-            var userUUID = UUID.randomUUID();
-            var accessTokenPayload = new AccessTokenPayload(userUUID, username);
-            var refreshTokenPayload = new RefreshTokenPayload(userUUID, username);
+            final RegisterUserCommand registerUserCommand = new RegisterUserCommand(email, username, password);
+            final JsonWebTokenResponse jsonWebTokenResponse = registerUserCommandService.execute(registerUserCommand);
 
-            var accessTokenString = accessTokenService.generateTokenString(accessTokenPayload);
-            var refreshTokenString = refreshTokenService.generateTokenString(refreshTokenPayload);
+            final String accessTokenString = jsonWebTokenResponse.accessTokenString();
+            final String refreshTokenUUIDString = jsonWebTokenResponse.refreshTokenUUIDString();
 
-            var accountCreateCommand = new AccountCreateCommand(userUUID, email, username, password, refreshTokenString);
-            accountCreateCommandCoordinator.coordinate(accountCreateCommand);
+            return generateTokensResponse(accessTokenService, refreshTokenService, accessTokenString, refreshTokenUUIDString);
+        } catch (UsernameAlreadyExistsException | EmailAlreadyExistsException exception) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @NotNull
+    public ResponseEntity<String> login(@NotNull String email, @NotNull String password) {
+        try {
+            final LoginUserCommand loginUserCommand = new LoginUserCommand(email, password);
+            final JsonWebTokenResponse jsonWebTokenResponse = loginUserCommandService.execute(loginUserCommand);
+
+            final String accessTokenString = jsonWebTokenResponse.accessTokenString();
+            final String refreshTokenString = jsonWebTokenResponse.refreshTokenUUIDString();
 
             return generateTokensResponse(accessTokenService, refreshTokenService, accessTokenString, refreshTokenString);
-        } catch (UsernameAlreadyExistsException | EmailAlreadyExistsException exception) {
-            return ResponseEntity.badRequest().body("Username or email already exists!");
+        } catch (EmailNotFoundException | PasswordDoesNotMatchException exception) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @NotNull
-    public ResponseEntity<String> login(
-            @NotNull String email,
-            @NotNull String password,
-            @Nullable String accessTokenCookieString
-    ) {
-        if (accessTokenCookieString != null && accessTokenService.validateTokenString(accessTokenCookieString)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-
-        var userCredentialsView = userCredentialsQueryService.findByEmail(email);
-        if (userCredentialsView == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        var passwordHash = userCredentialsView.getPasswordHash();
-        var isPasswordCorrect = passwordEncoder.matches(password, passwordHash);
-        if (!isPasswordCorrect) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
-        }
-
-        var userUUID = userCredentialsView.getUserUUID();
-        var accessTokenPayload = new AccessTokenPayload(userUUID, userCredentialsView.getUsername());
-        var accessTokenString = accessTokenService.generateTokenString(accessTokenPayload);
-
-        var refreshTokenPayload = new RefreshTokenPayload(userCredentialsView.getUserUUID(), userCredentialsView.getUsername());
-        var refreshTokenString = refreshTokenService.generateTokenString(refreshTokenPayload);
-
-        var updateRefreshTokenCommand = new AddRefreshTokenCommand(userUUID, refreshTokenString);
-        updateRefreshTokenCommandCoordinator.coordinate(updateRefreshTokenCommand);
-
-        return generateTokensResponse(accessTokenService, refreshTokenService, accessTokenString, refreshTokenString);
-    }
-
-    @NotNull
-    public ResponseEntity<String> logout(@NotNull String accessTokenString, @NotNull String refreshTokenString) {
-        if (accessTokenString.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        var accessToken = accessTokenService.getTokenFromString(accessTokenString);
-        var userUUID = accessToken.userUUID();
-
-        var removeRefreshTokenCommand = new RemoveRefreshTokenCommand(userUUID, refreshTokenString);
-        removeRefreshTokenCommandCoordinator.coordinate(removeRefreshTokenCommand);
-
+    public ResponseEntity<String> logout(@Nullable SessionAuthentication authentication) {
         var accessTokenCookie = generateCookie("access_token", "", Duration.ZERO);
-        var refreshTokenCookie = generateCookie("refresh_token", "", Duration.ZERO);
+        var refreshTokenUUIDCookie = generateCookie("refresh_token_uuid", "", Duration.ZERO);
 
-        var httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-        httpHeaders.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+        try {
+            if (authentication == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
 
-        invalidAccessTokenService.invalidateToken(accessTokenString, accessTokenService);
-        return ResponseEntity.ok()
-                .header("Set-Cookie", accessTokenCookie.toString())
-                .header("Set-Cookie", refreshTokenCookie.toString())
-                .build();
+            final String accessTokenString = authentication.getAccessTokenString();
+            final String refreshTokenString = authentication.getRefreshTokenString();
+
+            final LogoutUserCommand logoutUserCommand = new LogoutUserCommand(accessTokenString, refreshTokenString);
+            logoutUserCommandService.execute(logoutUserCommand);
+
+            return ResponseEntity.ok()
+                    .header("Set-Cookie", accessTokenCookie.toString())
+                    .header("Set-Cookie", refreshTokenUUIDCookie.toString())
+                    .build();
+        } catch (AccessTokenInvalidException exception) {
+            return ResponseEntity.ok()
+                    .header("Set-Cookie", accessTokenCookie.toString())
+                    .header("Set-Cookie", refreshTokenUUIDCookie.toString())
+                    .build();
+        }
     }
 }

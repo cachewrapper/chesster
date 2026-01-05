@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.cachewrapper.aggregate.UserAggregate;
 import org.cachewrapper.query.domain.UserViewDto;
 import org.cachewrapper.query.service.UserQueryService;
+import org.cachewrapper.token.filter.domain.SessionAuthentication;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,9 +21,8 @@ public class UserV1Controller {
     private final UserQueryService userQueryService;
 
     @GetMapping("/me")
-    //TODO: Make custom authentication domain object
-    public UserViewDto me(Authentication authentication) {
-        var userUUID = UUID.fromString((String) authentication.getPrincipal());
+    public UserViewDto me(SessionAuthentication authentication) {
+        var userUUID = authentication.getUserUUID();
         return userQueryService.findById(userUUID);
     }
 }

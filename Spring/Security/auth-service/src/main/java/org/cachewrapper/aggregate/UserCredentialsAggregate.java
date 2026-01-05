@@ -1,38 +1,26 @@
 package org.cachewrapper.aggregate;
 
-import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.cachewrapper.exception.RefreshTokenEmptyException;
+import lombok.*;
+import org.cachewrapper.aggregate.mapper.UserCredentialsAggregateMapper;
+import org.cachewrapper.data.domain.UserCredentialsEntity;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
-@Getter
-@Entity
-@Table(name = "user_credentials_aggregate")
-@NoArgsConstructor
-public class UserCredentialsAggregate extends Aggregate {
+@Data
+@AllArgsConstructor
+public class UserCredentialsAggregate implements Aggregate {
 
-    @Column(name = "email")
+    private UUID userUUID;
     private String email;
-
-    @Column(name = "username")
     private String username;
-
-    @Column(name = "password_hash")
     private String passwordHash;
 
     public UserCredentialsAggregate(
-            @NotNull UUID userUUID,
-            @NotNull String email,
-            @NotNull String username,
-            @NotNull String passwordHash
+            @NotNull final String email,
+            @NotNull final String username,
+            @NotNull final String passwordHash
     ) {
-        super(userUUID);
         this.email = email;
         this.username = username;
         this.passwordHash = passwordHash;

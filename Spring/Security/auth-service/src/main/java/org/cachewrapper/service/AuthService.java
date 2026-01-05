@@ -4,10 +4,12 @@ import org.cachewrapper.token.service.token.AccessTokenService;
 import org.cachewrapper.token.service.token.RefreshTokenService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 
 import java.time.Duration;
+import java.util.UUID;
 
 public interface AuthService {
 
@@ -22,14 +24,13 @@ public interface AuthService {
         var accessTokenCookie = generateCookie("access_token", accessTokenString, accessTokenExpiration);
 
         var refreshTokenExpiration = refreshTokenService.getExpirationDuration();
-        var refreshTokenCookie = generateCookie("refresh_token", refreshTokenString, refreshTokenExpiration);
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(HttpHeaders.SET_COOKIE, accessTokenCookie.toString());
-        httpHeaders.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+        var refreshTokenCookie = generateCookie("refresh_token_uuid", refreshTokenString, refreshTokenExpiration);
 
         return ResponseEntity.ok()
-                .headers(httpHeaders)
+                .header("Set-Cookie", generateCookie("access_token", "", Duration.ZERO).toString())
+                .header("Set-Cookie", generateCookie("refresh_token_uuid", "", Duration.ZERO).toString())
+                .header("Set-Cookie", accessTokenCookie.toString())
+                .header("Set-Cookie", refreshTokenCookie.toString())
                 .build();
     }
 

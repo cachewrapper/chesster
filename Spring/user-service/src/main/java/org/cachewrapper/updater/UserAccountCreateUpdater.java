@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.cachewrapper.aggregate.UserAggregate;
 import org.cachewrapper.aggregate.repository.UserAggregateRepository;
 import org.cachewrapper.event.impl.AccountCreateEvent;
+import org.cachewrapper.listener.Listener;
 import org.cachewrapper.query.domain.UserViewDto;
 import org.cachewrapper.query.repository.UserViewRepository;
 import org.cachewrapper.query.repository.ViewRepository;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserAccountCreateUpdater implements Updater<AccountCreateEvent> {
+public class UserAccountCreateUpdater implements Listener<AccountCreateEvent> {
 
     private final UserAggregateRepository userAggregateRepository;
     private final UserViewRepository userViewRepository;
@@ -21,7 +22,7 @@ public class UserAccountCreateUpdater implements Updater<AccountCreateEvent> {
     @Override
     @KafkaListener(topics = "account-create", groupId = "account-events-group")
     @Transactional
-    public void update(AccountCreateEvent event) {
+    public void listener(AccountCreateEvent event) {
         var userUUID = event.getUserUUID();
         var email = event.getEmail();
         var username = event.getUsername();
