@@ -4,9 +4,11 @@ const API_BASE_URL = "http://100.79.251.72:8080/api/v1";
 
 const API = axios.create({
     baseURL: API_BASE_URL,
-    headers: {"Content-Type": "application/json"},
+    headers: { "Content-Type": "application/json" },
     withCredentials: true
 });
+
+let refreshPromise = null;
 
 export async function checkAuth() {
     try {
@@ -33,8 +35,19 @@ API.interceptors.response.use(
 
         originalRequest._retry = true;
 
+        if (!refreshPromise) {
+            refreshPromise = API.post("/auth/token/refresh")
+                .then(() => {
+                    refreshPromise = null;
+                })
+                .catch(err => {
+                    refreshPromise = null;
+                    throw err;
+                });
+        }
+
         try {
-            await API.post("/auth/token/refresh");
+            await refreshPromise;
             return API(originalRequest);
         } catch {
             return Promise.reject(error);
