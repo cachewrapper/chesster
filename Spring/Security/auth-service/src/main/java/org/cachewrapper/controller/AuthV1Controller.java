@@ -7,6 +7,7 @@ import org.cachewrapper.service.impl.AuthenticationService;
 import org.cachewrapper.token.filter.domain.SessionAuthentication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,7 +35,7 @@ public class AuthV1Controller {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(SessionAuthentication authentication) {
+    public ResponseEntity<String> logout(@AuthenticationPrincipal SessionAuthentication authentication) {
         return authenticationService.logout(authentication);
     }
 }

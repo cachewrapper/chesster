@@ -1,5 +1,6 @@
 package org.cachewrapper.command.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.cachewrapper.command.domain.LogoutUserCommand;
 import org.cachewrapper.exception.AccessTokenInvalidException;

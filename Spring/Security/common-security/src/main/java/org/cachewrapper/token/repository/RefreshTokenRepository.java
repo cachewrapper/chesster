@@ -15,6 +15,7 @@ import java.util.UUID;
 @Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, UUID> {
 
+    @Transactional
     void deleteByUserUUIDAndRefreshTokenString(@NotNull UUID userUUID, @NotNull String refreshTokenString);
 
     @Transactional

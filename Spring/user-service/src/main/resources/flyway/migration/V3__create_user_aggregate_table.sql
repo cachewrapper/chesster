@@ -1,9 +1,10 @@
-CREATE TABLE user_aggregate (
-    aggregate_uuid UUID PRIMARY KEY,
+CREATE TABLE users (
+    user_uuid UUID PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     username VARCHAR(255) NOT NULL UNIQUE,
+    avatar BYTEA,
     CONSTRAINT fk_user_credentials
-        FOREIGN KEY (aggregate_uuid)
-            REFERENCES user_credentials_aggregate(aggregate_uuid)
-            ON DELETE CASCADE
+        FOREIGN KEY (user_uuid)
+        REFERENCES user_credentials(user_uuid)
+        ON DELETE CASCADE
 );

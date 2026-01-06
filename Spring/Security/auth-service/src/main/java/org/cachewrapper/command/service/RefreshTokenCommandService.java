@@ -54,6 +54,7 @@ public class RefreshTokenCommandService implements CommandService<JsonWebTokenRe
             return createResponse(userUUID, username, refreshTokenString);
         } finally {
             lock.unlock();
+            locks.remove(userUUID, lock);
         }
     }
 

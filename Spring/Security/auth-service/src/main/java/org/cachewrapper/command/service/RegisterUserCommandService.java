@@ -5,6 +5,8 @@ import org.cachewrapper.aggregate.UserCredentialsAggregate;
 import org.cachewrapper.command.domain.RegisterUserCommand;
 import org.cachewrapper.command.response.JsonWebTokenResponse;
 import org.cachewrapper.data.service.UserCredentialsService;
+import org.cachewrapper.event.Event;
+import org.cachewrapper.event.impl.AccountCreateEvent;
 import org.cachewrapper.exception.EmailAlreadyExistsException;
 import org.cachewrapper.exception.UsernameAlreadyExistsException;
 import org.cachewrapper.token.domain.payload.AccessTokenPayload;
@@ -14,6 +16,7 @@ import org.cachewrapper.token.repository.domain.RefreshTokenEntity;
 import org.cachewrapper.token.service.token.AccessTokenService;
 import org.cachewrapper.token.service.token.RefreshTokenService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,8 @@ public class RegisterUserCommandService implements CommandService<JsonWebTokenRe
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    private final KafkaTemplate<String, Event> kafkaTemplate;
 
     @Override
     public JsonWebTokenResponse execute(RegisterUserCommand command) {
@@ -50,6 +55,9 @@ public class RegisterUserCommandService implements CommandService<JsonWebTokenRe
 
         final var savedUserCredentialsAggregate = userCredentialsService.save(userCredentialsAggregate);
         final UUID userUUID = savedUserCredentialsAggregate.getUserUUID();
+
+        final AccountCreateEvent accountCreateEvent = new AccountCreateEvent(userUUID, email, username);
+        kafkaTemplate.send("account-create", accountCreateEvent);
 
         return createResponse(userUUID, username);
     }
