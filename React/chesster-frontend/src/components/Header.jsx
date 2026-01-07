@@ -1,5 +1,5 @@
 import MenuButton from "./MenuButton";
-import API from "../api/Api";
+import Api from "../api/Api";
 import { useNavigate } from "react-router-dom";
 
 export default function Header() {
@@ -7,7 +7,7 @@ export default function Header() {
 
     const handleLogout = async () => {
         try {
-            await API.post("/auth/logout", {});
+            await Api.post("/auth/logout", {});
             window.location.reload();
         } catch (err) {
             console.error("Logout failed", err);

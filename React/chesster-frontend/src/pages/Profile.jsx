@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import API from "../api/Api";
+import Api from "../api/Api";
 
 export default function Profile() {
     const [profile, setProfile] = useState(null);
@@ -11,7 +11,7 @@ export default function Profile() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await API.get("/users/profile");
+                const response = await Api.get("/users/profile");
                 setProfile(response.data);
             } catch (err) {
                 console.error("Failed to fetch profile", err);
@@ -44,11 +44,11 @@ export default function Profile() {
 
         try {
             setUploading(true);
-            await API.put("/users/upload/avatar", formData, {
+            await Api.put("/users/upload/avatar", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 
-            const response = await API.get("/users/profile");
+            const response = await Api.get("/users/profile");
             setProfile(response.data);
         } catch (err) {
             console.error("Ошибка загрузки аватарки", err);

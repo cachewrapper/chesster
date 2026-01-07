@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api/Api";
+import Api from "../api/Api";
 import { AuthContext } from "../context/AuthContext";
 
 export function Register() {
@@ -24,7 +24,7 @@ export function Register() {
 
         setLoading(true);
         try {
-            await API.post("/auth/register", {
+            await Api.post("/auth/register", {
                 username: username.trim(),
                 email: email.trim(),
                 password: password.trim(),

@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import API from "../api/Api";
+import Api from "../api/Api";
 
 export const AuthContext = createContext();
 
@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
 
     useEffect(() => {
         (async () => {
-            const logged = await API.checkAuth();
+            const logged = await Api.checkAuth();
             setIsLoggedIn(logged);
             setLoading(false);
         })();

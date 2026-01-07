@@ -42,10 +42,10 @@ public interface AuthService {
     ) {
         return ResponseCookie.from(identifier, value)
                 .httpOnly(false)
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .maxAge(expirationDuration)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
     }
 }

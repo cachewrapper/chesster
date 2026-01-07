@@ -1,7 +1,7 @@
 import Header from "../../components/Header";
 import MainContent from "../../components/MainContent";
 import { useEffect, useState } from "react";
-import API from "../../api/Api";
+import Api from "../../api/Api";
 
 export default function MainUser() {
     const [username, setUsername] = useState("");
@@ -9,7 +9,7 @@ export default function MainUser() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await API.get("/users/profile");
+                const response = await Api.get("/users/profile");
                 setUsername(response.data.username);
             } catch (err) {
                 console.error("Failed to fetch profile", err);

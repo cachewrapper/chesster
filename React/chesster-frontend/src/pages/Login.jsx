@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api/Api";
+import Api from "../api/Api";
 import { AuthContext } from "../context/AuthContext";
 
 export function Login() {
@@ -16,7 +16,7 @@ export function Login() {
         setError("");
 
         try {
-            await API.post("/auth/login", { email, password });
+            await Api.post("/auth/login", { email, password });
             setIsLoggedIn(true);
             navigate("/");
         } catch (error) {

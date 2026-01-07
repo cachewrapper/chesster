@@ -12,12 +12,14 @@
             <option value="$PROJECT_DIR$/React" />
             <option value="$PROJECT_DIR$/React/chesster-frontend" />
             <option value="$PROJECT_DIR$/Spring" />
+            <option value="$PROJECT_DIR$/Spring/Game" />
+            <option value="$PROJECT_DIR$/Spring/Game/game" />
+            <option value="$PROJECT_DIR$/Spring/Game/game-service" />
             <option value="$PROJECT_DIR$/Spring/Security" />
             <option value="$PROJECT_DIR$/Spring/Security/api-gateway" />
             <option value="$PROJECT_DIR$/Spring/Security/auth-service" />
             <option value="$PROJECT_DIR$/Spring/Security/common-security" />
             <option value="$PROJECT_DIR$/Spring/common" />
-            <option value="$PROJECT_DIR$/Spring/game-service" />
             <option value="$PROJECT_DIR$/Spring/user-service" />
           </set>
         </option>

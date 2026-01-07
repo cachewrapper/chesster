@@ -76,5 +76,5 @@ class APIClient {
     }
 }
 
-const API = new APIClient();
-export default API;
+const Api = new APIClient();
+export default Api;

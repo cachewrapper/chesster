@@ -7,5 +7,6 @@ group = "org.cachewrapper"
 version = "1.0"
 
 dependencies {
-    implementation(project(":Spring:common"))
+    implementation(project(":Spring:Security:common-security"))
+    implementation("org.springframework.boot:spring-boot-starter-websocket:4.0.1")
 }

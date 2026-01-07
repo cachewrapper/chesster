@@ -7,7 +7,6 @@ export default function ChessPage() {
     const [game, setGame] = useState(new Chess());
     const [selected, setSelected] = useState(null);
 
-    // Авто‑ход черных
     const autoMoveBlack = () => {
         if (game.game_over()) return;
 
