@@ -2,11 +2,12 @@ package org.cachewrapper.player.data;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.cachewrapper.player.GamePlayerColor;
+
+import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
-public class GamePlayer {
+public abstract class GamePlayer {
 
-    private final GamePlayerColor gamePlayerColor;
+    private final UUID playerUUID;
 }

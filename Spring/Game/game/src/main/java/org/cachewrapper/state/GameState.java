@@ -1,4 +1,5 @@
 package org.cachewrapper.state;
 
-public class GameState {
+public interface GameState {
+    GameStateMetadata metadata();
 }

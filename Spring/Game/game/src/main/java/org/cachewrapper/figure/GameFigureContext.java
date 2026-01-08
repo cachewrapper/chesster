@@ -1,30 +1,56 @@
 package org.cachewrapper.figure;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.cachewrapper.Game;
+import org.cachewrapper.figure.impl.PawnGameFigure;
+import org.cachewrapper.figure.tracker.GameFigureTracker;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnmodifiableView;
-import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-@Component
+@Getter
+@RequiredArgsConstructor
 public class GameFigureContext {
 
-    private final Map<Integer, GameFigure> figureCells = new HashMap<>();
+    private static final String FEN_STRING = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
-    public <F extends GameFigure> void setFigureCell(@NotNull int cell, @NotNull F figure) {
-        figureCells.put(cell, figure);
-    }
-
-    @NotNull
-    public GameFigure getFigure(@NotNull int cell) {
-        return figureCells.get(cell);
-    }
+    private final GameFigureTracker gameFigureTracker = new GameFigureTracker();
+    private final Game game;
 
     @NotNull
-    @UnmodifiableView
-    public Map<Integer, GameFigure> getFigureCells() {
-        return Collections.unmodifiableMap(figureCells);
+    public List<GameFigure> loadGameFigures() {
+        final List<GameFigure> gameFigures = new ArrayList<>();
+
+        final String fenPosition = FEN_STRING.split(" ")[0];
+        final String[] rows = fenPosition.split("/");
+
+        for (int coordianteY = 0; coordianteY < 8; coordianteY++) {
+            int coordinateX = 0;
+
+            for (char character : rows[coordianteY].toCharArray()) {
+                if (Character.isDigit(character)) {
+                    coordinateX += character - '0';
+                    continue;
+                }
+
+                UUID figureOwnerUUID = Character.isUpperCase(character)
+                        ? game.getWhitePlayerUUID()
+                        : game.getBlackPlayerUUID();
+
+                GameFigure figure = switch (Character.toUpperCase(character)) {
+                    case 'P' -> new PawnGameFigure(figureOwnerUUID, coordinateX, coordianteY);
+                    default -> null;
+                };
+
+                gameFigures.add(figure);
+                coordinateX++;
+            }
+        }
+
+        return gameFigures;
     }
 }
