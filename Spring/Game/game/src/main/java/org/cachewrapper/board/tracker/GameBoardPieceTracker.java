@@ -1,7 +1,7 @@
 package org.cachewrapper.board.tracker;
 
 import org.cachewrapper.piece.data.Location;
-import org.cachewrapper.piece.game.type.GamePiece;
+import org.cachewrapper.piece.type.GamePiece;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 

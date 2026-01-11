@@ -1,9 +1,9 @@
-package org.cachewrapper.piece.game.validator.registry;
+package org.cachewrapper.piece.validator.registry;
 
 import org.cachewrapper.Game;
-import org.cachewrapper.piece.game.type.GamePiece;
-import org.cachewrapper.piece.game.validator.GamePieceValidator;
-import org.cachewrapper.piece.game.validator.impl.PawnPieceValidator;
+import org.cachewrapper.piece.type.GamePiece;
+import org.cachewrapper.piece.validator.GamePieceValidator;
+import org.cachewrapper.piece.validator.impl.PawnPieceValidator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

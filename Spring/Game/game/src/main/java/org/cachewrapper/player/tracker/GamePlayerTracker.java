@@ -34,4 +34,14 @@ public class GamePlayerTracker {
     public List<GamePlayer> getGamePlayers() {
         return gamePlayers.values().stream().toList();
     }
+
+    @NotNull
+    @UnmodifiableView
+    @SuppressWarnings("unchecked")
+    public <T extends GamePlayer> List<T> getGamePlayersByType(@NotNull Class<? extends GamePlayer> gamePlayerType) {
+        return (List<T>) gamePlayers.values()
+                .stream()
+                .filter(gamePlayer -> gamePlayer.getClass().equals(gamePlayerType))
+                .toList();
+    }
 }

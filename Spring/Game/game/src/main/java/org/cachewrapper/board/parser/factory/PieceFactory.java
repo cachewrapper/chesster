@@ -1,6 +1,6 @@
 package org.cachewrapper.board.parser.factory;
 
-import org.cachewrapper.piece.game.type.GamePiece;
+import org.cachewrapper.piece.type.GamePiece;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;

@@ -1,7 +1,8 @@
-package org.cachewrapper.piece.game.type;
+package org.cachewrapper.piece.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.cachewrapper.piece.data.Location;
 
 import java.util.UUID;
 

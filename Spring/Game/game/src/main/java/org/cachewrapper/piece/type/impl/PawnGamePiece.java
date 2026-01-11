@@ -1,6 +1,6 @@
-package org.cachewrapper.piece.game.type.impl;
+package org.cachewrapper.piece.type.impl;
 
-import org.cachewrapper.piece.game.type.GamePiece;
+import org.cachewrapper.piece.type.GamePiece;
 
 import java.util.UUID;
 

@@ -1,5 +1,8 @@
 package org.cachewrapper.socket.payload.request;
 
-public record MoveRequestPayload(
+import org.cachewrapper.piece.data.Location;
 
+public record MoveRequestPayload(
+        Location previousLocation,
+        Location goalLocation
 ) implements RequestPayload {}

@@ -8,23 +8,9 @@ import {Register} from "./pages/Register";
 import {AuthContext} from "./context/AuthContext";
 import Profile from "./pages/Profile";
 import ChessPage from "./pages/ChessPage";
-import {GameWebSocket} from "./socket/GameWebSocket";
 
 export default function App() {
     const {isLoggedIn} = useContext(AuthContext);
-
-    useEffect(() => {
-        const gameWebSocket = new GameWebSocket("ws://localhost:8083/ws");
-        gameWebSocket.connect();
-
-        gameWebSocket.onOpen(() => {
-            gameWebSocket.sendMessage("Hello from App component!");
-        })
-
-        gameWebSocket.onMessage((msg) => {
-            console.log("Received message: ", msg);
-        })
-    }, []);
 
     return (
         <Routes>

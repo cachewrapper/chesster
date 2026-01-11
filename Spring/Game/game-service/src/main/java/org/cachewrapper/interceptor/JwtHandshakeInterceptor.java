@@ -30,11 +30,14 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             WebSocketHandler webSocketHandler,
             Map<String, Object> attributes
     ) {
-        final String accessToken = getCookieValue(serverHttpRequest, "access_token");
-        if (accessToken == null || !accessTokenService.validateTokenString(accessToken)) {
+        final String accessTokenString = getCookieValue(serverHttpRequest, "access_token");
+        if (accessTokenString == null || !accessTokenService.validateTokenString(accessTokenString)) {
             serverHttpResponse.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;
         }
+
+        final var accessToken = accessTokenService.getTokenFromString(accessTokenString);
+        attributes.put("userUUID", accessToken.userUUID());
 
         return true;
     }

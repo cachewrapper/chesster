@@ -1,9 +1,9 @@
 package org.cachewrapper.piece;
 
 import org.cachewrapper.Game;
-import org.cachewrapper.piece.game.type.GamePiece;
-import org.cachewrapper.piece.game.validator.GamePieceValidator;
-import org.cachewrapper.piece.game.validator.registry.GamePieceValidatorRegistry;
+import org.cachewrapper.piece.type.GamePiece;
+import org.cachewrapper.piece.validator.GamePieceValidator;
+import org.cachewrapper.piece.validator.registry.GamePieceValidatorRegistry;
 import org.jetbrains.annotations.NotNull;
 
 public class GamePieceContext {

@@ -9,4 +9,6 @@ version = "1.0"
 dependencies {
     implementation(project(":Spring:Security:common-security"))
     implementation("org.springframework.boot:spring-boot-starter-websocket:4.0.1")
+
+    implementation(project(":Spring:Game:game"))
 }

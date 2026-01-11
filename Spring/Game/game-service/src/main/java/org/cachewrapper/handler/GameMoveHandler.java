@@ -9,4 +9,9 @@ public class GameMoveHandler implements GameHandler<MoveResponsePayload, MoveReq
     public MoveResponsePayload handle(MoveRequestPayload requestPayload) {
         return null;
     }
+
+    @Override
+    public String identifier() {
+        return "move";
+    }
 }
